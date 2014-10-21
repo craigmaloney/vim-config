@@ -1,0 +1,229 @@
+" Vim
+set nocompatible " Use Vim defaults (much better!)
+filetype off
+
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'gmarik/Vundle.vim'
+Bundle 'bling/vim-airline'
+Plugin 'tpope/vim-fugitive'
+Bundle 'itchyny/calendar.vim'
+Bundle 'kien/ctrlp.vim'
+Bundle 'scrooloose/syntastic'
+"Bundle 'scrooloose/nerdtree'
+Bundle 'tpope/vim-vinegar'
+Bundle 'danro/rename.vim'
+Bundle 'ervandew/supertab'
+Bundle 'davidoc/todo.txt-vim'
+Bundle 'nvie/vim-flake8'
+Bundle 'TwitVim'
+Bundle 'mtth/scratch.vim'
+Bundle 'jlanzarotta/bufexplorer'
+Bundle 'jamessan/vim-gnupg'
+Bundle 'fs111/pydoc.vim'
+Bundle 'scrooloose/nerdcommenter'
+Bundle 'davidhalter/jedi'
+
+" Snipmate
+Bundle "MarcWeber/vim-addon-mw-utils"
+Bundle "tomtom/tlib_vim"
+Bundle "garbas/vim-snipmate"
+Bundle "honza/vim-snippets"
+
+set t_Co=256 " Set Vim for 256 colors
+colorscheme synic
+syntax enable
+set nofoldenable
+set hidden
+
+execute pathogen#infect()
+
+set nobackup 
+set viminfo='20,\"50 " read/write a .viminfo file, don't store more
+" than 50 lines of registers
+set showmode
+set incsearch
+set ignorecase
+set smartcase " override ignorecase if capitalized
+
+" Indentation
+"set cindent
+"set autoindent
+set smartindent
+filetype plugin indent on
+set bs=2 " allow backspacing over everything in insert mode
+set backspace=indent,eol,start
+
+set wildmode=longest,list
+set nohlsearch
+set ruler
+set display+=lastline
+set formatoptions=tcql
+set lbr
+
+" I like highlighting strings inside C comments
+let c_comment_strings=1
+
+" This comes from PBP
+set tabstop=4
+set expandtab
+set shiftwidth=4
+set shiftround
+
+" Don't use Ex mode, use Q for formatting
+map Q gq
+
+" Insert a timestamp
+nmap <F3> a<C-R>=strftime("%T: ")<CR><Esc>
+imap <F3> <C-R>=strftime("%T: ")<CR>
+
+" Set cursor mode so it will move by visible lines
+map <up> gk
+imap <up> <C-o>gk
+map <down> gj
+imap <down> <C-o>gj
+map <home> g<home>
+imap <home> <C-o>g<home>
+map <end> g<end>
+imap <end> <C-o>g<end>
+
+" map ]], [[, [], and ][ to match KNR style
+:map [[ ?{<CR>w99[{
+:map ][ /}<CR>b99]}
+:map ]] j0[[%/{<CR>
+:map [] k$][%?}<CR>
+
+
+" setup omnicompletion for file types
+if has("autocmd")
+    autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+    autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+    autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+    autocmd FileType c set omnifunc=ccomplete#Complete
+    autocmd FileType perl set makeprg=perl\ -c\ %\ $*
+    autocmd FileType perl set errorformat=%f:%l:%m
+    autocmd FileType perl set autowrite
+
+    " http://vim.wikia.com/wiki/Python_-_check_syntax_and_run_script
+    autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
+    autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
+    autocmd BufRead *.py nmap <F5> :!python %<CR>
+    
+    " Automatically source .vimrc when we save it
+    autocmd BufWritePost ~/.vimrc so %
+
+endif " has("autocmd")
+
+" Set the clipboard to the X windows clipboard
+set clipboard=unnamedplus
+
+" Yank to clipboard
+noremap <leader>y "*y
+
+" Paste from clipboard without messing up indent.
+noremap <leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
+
+" Some shortcuts that are nice to have.
+map <leader>v :sp ~/.vimrc<CR><C-W>_
+map <leader>T :sp ~/Dropbox/todo/todo.txt<CR><C-W>_
+map <leader>F :FriendsTwitter<CR>
+map <leader>N :Explore<CR>
+" Journal shortcut
+map <leader>J :Journal<CR>
+
+" TwitVim goodness
+let twitvim_force_ssl = 1
+let twitvim_enable_python = 1 
+let twitvim_count=100
+
+" Twitter goodness
+"nnoremap <F8> :FriendsTwitter<cr>
+nnoremap <F8> :FriendsTwitter<cr>
+nnoremap <S-F8> :UserTwitter<cr>
+nnoremap <A-F8> :RepliesTwitter<cr>
+nnoremap <C-F8> :DMTwitter<cr>
+" End TwitVim Goodness
+
+
+
+" show the registers from things cut/yanked
+nmap <leader>r :registers<CR>
+
+" Turn on spell checking
+setlocal spell spelllang=en_us
+
+" Pyflakes
+" http://www.vim.org/scripts/script.php?script_id=3161
+" default config for underlines of syntax errors in gvim
+let g:pyflakes_use_quickfix = 0
+
+" Enable the :Man command for manual pages
+runtime ftplugin/man.vim
+
+" Netrw settings
+let g:netrw_liststyle=3 " Use tree-mode as default view
+let g:netrw_browse_split=0 " Open file in previous buffer
+let g:netrw_preview=1 " preview window shown in a vertically split
+
+" Turn on numbering
+set number
+
+" ==================================================
+" Windows / Splits
+" ==================================================
+
+" ctrl-jklm  changes to that split
+map <c-j> <c-w>j
+map <c-k> <c-w>k
+map <c-l> <c-w>l
+map <c-h> <c-w>h
+
+" and lets make these all work in insert mode too ( <C-O> makes next cmd
+" happen as if in command mode )
+"imap <C-W> <C-O><C-W>
+
+" use - and + to resize horizontal splits
+map - <C-W>-
+map + <C-W>+
+
+" and for vsplits with alt-< or alt->
+map <M-,> <C-W>>
+map <M-.> <C-W><
+
+" Omni completion
+set ofu=syntaxcomplete#Complete
+    " from https://github.com/spf13/spf13-vim/blob/master/.vimrc
+if has('statusline')
+    set laststatus=2
+    " Broken down into easily includeable segments
+    set statusline=%<%f\    " Filename
+    set statusline+=%w%h%m%r " Options
+    set statusline+=%{fugitive#statusline()} "  Git Hotness
+    set statusline+=\ [%{&ff}/%Y]            " filetype
+    set statusline+=\ [%{getcwd()}]          " current dir
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+    let g:syntastic_enable_signs=1
+    set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
+endif
+
+" Debugging Macro
+let @d='iimport ipdb;ipdb.set_trace()'
+
+" Calendar
+let g:calendar_google_calendar = 1
+let g:calendar_google_task = 1
+
+" Git time lapse
+map <leader>gt :call TimeLapse() <cr>
+
+" gnupg Defaults
+let g:GPGDefaultRecipients = ['craig@decafbad.net']
+
+" SuperTab Configuration
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
