@@ -11,25 +11,35 @@ Plugin 'tpope/vim-fugitive'
 Bundle 'itchyny/calendar.vim'
 Bundle 'kien/ctrlp.vim'
 Bundle 'scrooloose/syntastic'
-"Bundle 'scrooloose/nerdtree'
 Bundle 'tpope/vim-vinegar'
-Bundle 'danro/rename.vim'
 Bundle 'ervandew/supertab'
 Bundle 'davidoc/todo.txt-vim'
-Bundle 'nvie/vim-flake8'
-Bundle 'TwitVim'
-Bundle 'mtth/scratch.vim'
 Bundle 'jlanzarotta/bufexplorer'
 Bundle 'jamessan/vim-gnupg'
-Bundle 'fs111/pydoc.vim'
 Bundle 'scrooloose/nerdcommenter'
-Bundle 'davidhalter/jedi'
+Bundle 'davidhalter/jedi-vim'
+Bundle 'christoomey/vim-tmux-navigator'
+Bundle 'scrooloose/NERDTree'
 
 " Snipmate
 Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
 Bundle "garbas/vim-snipmate"
 Bundle "honza/vim-snippets"
+
+function! Writing()
+    set nonumber  " turn off line numbers
+    set guicursor=a:blinkon0  " Turn off the blinking cursor
+    set laststatus=1 " Hides status bar when only one file open
+    set wrap
+    set linebreak
+    noremap j gj
+    noremap k gk
+    noremap 0 g0
+    noremap $ g$
+    set whichwrap=b,s,<,>,[,],h,l
+endfunction
+
 
 set t_Co=256 " Set Vim for 256 colors
 colorscheme synic
@@ -115,6 +125,9 @@ if has("autocmd")
     " Automatically source .vimrc when we save it
     autocmd BufWritePost ~/.vimrc so %
 
+    " Jedi
+    autocmd FileType python setlocal completeopt-=preview
+
 endif " has("autocmd")
 
 " Set the clipboard to the X windows clipboard
@@ -129,25 +142,9 @@ noremap <leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
 " Some shortcuts that are nice to have.
 map <leader>v :sp ~/.vimrc<CR><C-W>_
 map <leader>T :sp ~/Dropbox/todo/todo.txt<CR><C-W>_
-map <leader>F :FriendsTwitter<CR>
-map <leader>N :Explore<CR>
+map <leader>N :NERDTree<CR>
 " Journal shortcut
 map <leader>J :Journal<CR>
-
-" TwitVim goodness
-let twitvim_force_ssl = 1
-let twitvim_enable_python = 1 
-let twitvim_count=100
-
-" Twitter goodness
-"nnoremap <F8> :FriendsTwitter<cr>
-nnoremap <F8> :FriendsTwitter<cr>
-nnoremap <S-F8> :UserTwitter<cr>
-nnoremap <A-F8> :RepliesTwitter<cr>
-nnoremap <C-F8> :DMTwitter<cr>
-" End TwitVim Goodness
-
-
 
 " show the registers from things cut/yanked
 nmap <leader>r :registers<CR>
@@ -155,10 +152,7 @@ nmap <leader>r :registers<CR>
 " Turn on spell checking
 setlocal spell spelllang=en_us
 
-" Pyflakes
-" http://www.vim.org/scripts/script.php?script_id=3161
-" default config for underlines of syntax errors in gvim
-let g:pyflakes_use_quickfix = 0
+let g:syntastic_python_checkers = ['flake8', 'pyflakes', 'pylint']
 
 " Enable the :Man command for manual pages
 runtime ftplugin/man.vim
@@ -193,9 +187,7 @@ map + <C-W>+
 map <M-,> <C-W>>
 map <M-.> <C-W><
 
-" Omni completion
-set ofu=syntaxcomplete#Complete
-    " from https://github.com/spf13/spf13-vim/blob/master/.vimrc
+" from https://github.com/spf13/spf13-vim/blob/master/.vimrc
 if has('statusline')
     set laststatus=2
     " Broken down into easily includeable segments
@@ -211,9 +203,6 @@ if has('statusline')
     set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
 endif
 
-" Debugging Macro
-let @d='iimport ipdb;ipdb.set_trace()'
-
 " Calendar
 let g:calendar_google_calendar = 1
 let g:calendar_google_task = 1
@@ -224,6 +213,5 @@ map <leader>gt :call TimeLapse() <cr>
 " gnupg Defaults
 let g:GPGDefaultRecipients = ['craig@decafbad.net']
 
-" SuperTab Configuration
-let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+" Fugitive
+set diffopt+=vertical
