@@ -8,7 +8,6 @@ call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 Bundle 'bling/vim-airline'
 Plugin 'tpope/vim-fugitive'
-Bundle 'itchyny/calendar.vim'
 Bundle 'kien/ctrlp.vim'
 Bundle 'scrooloose/syntastic'
 Bundle 'tpope/vim-vinegar'
@@ -20,7 +19,9 @@ Bundle 'scrooloose/nerdcommenter'
 Bundle 'davidhalter/jedi-vim'
 Bundle 'christoomey/vim-tmux-navigator'
 Bundle 'scrooloose/NERDTree'
-
+Bundle 'TwitVim'
+Bundle 'jisaacks/GitGutter'
+Bundle 'xolox/vim-misc'
 " Snipmate
 Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
@@ -121,6 +122,7 @@ if has("autocmd")
     autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
     autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
     autocmd BufRead *.py nmap <F5> :!python %<CR>
+    autocmd BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif 
     
     " Automatically source .vimrc when we save it
     autocmd BufWritePost ~/.vimrc so %
@@ -128,10 +130,14 @@ if has("autocmd")
     " Jedi
     autocmd FileType python setlocal completeopt-=preview
 
+    " Understand Markdown files
+    autocmd BufNewFile,BufRead *.md set filetype=markdown
+
 endif " has("autocmd")
 
 " Set the clipboard to the X windows clipboard
-set clipboard=unnamedplus
+"set clipboard=unnamedplus
+set clipboard^=unnamed,unnamedplus
 
 " Yank to clipboard
 noremap <leader>y "*y
@@ -152,7 +158,8 @@ nmap <leader>r :registers<CR>
 " Turn on spell checking
 setlocal spell spelllang=en_us
 
-let g:syntastic_python_checkers = ['flake8', 'pyflakes', 'pylint']
+let g:syntastic_python_checkers = ['flake8', 'pyflakes', 'pylint', 'pylama']
+let g:syntastic_auto_loc_list=1 
 
 " Enable the :Man command for manual pages
 runtime ftplugin/man.vim
@@ -215,3 +222,21 @@ let g:GPGDefaultRecipients = ['craig@decafbad.net']
 
 " Fugitive
 set diffopt+=vertical
+
+" Pelican
+
+let g:pelican_blog_source = '~/projects/decafbad'
+let g:pelican_blog_html = '~/projects/decafbad/output'
+"let g:pelican_git_master = 'http://github.com/username/blog.git'
+"let g:pelican_publish_server = 'username@server.domain.com:~/html_directory'
+
+" TwitVim goodness
+let twitvim_force_ssl = 1
+let twitvim_enable_python = 1 
+let twitvim_count=100
+
+" Twitter goodness
+nnoremap <F8> :FriendsTwitter<cr>
+nnoremap <F7> :RepliesTwitter<cr>
+nnoremap <F9> :DMTwitter<cr>
+" End TwitVim Goodness
