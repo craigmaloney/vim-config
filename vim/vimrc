@@ -6,30 +6,50 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 Plugin 'gmarik/Vundle.vim'
-Bundle 'bling/vim-airline'
-Plugin 'tpope/vim-fugitive'
-Bundle 'itchyny/calendar.vim'
-Bundle 'kien/ctrlp.vim'
-Bundle 'scrooloose/syntastic'
-"Bundle 'scrooloose/nerdtree'
-Bundle 'tpope/vim-vinegar'
-Bundle 'danro/rename.vim'
-Bundle 'ervandew/supertab'
-Bundle 'davidoc/todo.txt-vim'
-Bundle 'nvie/vim-flake8'
-Bundle 'TwitVim'
-Bundle 'mtth/scratch.vim'
-Bundle 'jlanzarotta/bufexplorer'
-Bundle 'jamessan/vim-gnupg'
-Bundle 'fs111/pydoc.vim'
-Bundle 'scrooloose/nerdcommenter'
-Bundle 'davidhalter/jedi'
 
-" Snipmate
-Bundle "MarcWeber/vim-addon-mw-utils"
+" Snippets
 Bundle "tomtom/tlib_vim"
-Bundle "garbas/vim-snipmate"
+Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "honza/vim-snippets"
+Bundle "garbas/vim-snipmate"
+
+Plugin 'tpope/vim-fugitive'
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'w0rp/ale'
+Plugin 'vim-airline/vim-airline'
+Plugin 'tpope/vim-vinegar'
+Plugin 'ervandew/supertab'
+Plugin 'davidoc/todo.txt-vim'
+Plugin 'jlanzarotta/bufexplorer'
+Plugin 'jamessan/vim-gnupg'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'scrooloose/NERDTree'
+Plugin 'xolox/vim-misc'
+Plugin 'wlangstroth/vim-racket'
+Bundle "Shirk/vim-gas"
+Plugin 'elzr/vim-json'
+Plugin 'tweekmonster/django-plus.vim'
+Plugin 'mhinz/vim-signify'
+Plugin 'rust-lang/rust.vim'
+Plugin 'ChesleyTan/wordCount.vim'
+
+Bundle 'istepura/vim-toolbar-icons-silk'
+
+function! Writing()
+    set nonumber  " turn off line numbers
+    set guicursor=a:blinkon0  " Turn off the blinking cursor
+    set laststatus=1 " Hides status bar when only one file open
+    set wrap
+    set linebreak
+    noremap j gj
+    noremap k gk
+    noremap 0 g0
+    noremap $ g$
+    set whichwrap=b,s,<,>,[,],h,l
+endfunction
+
 
 set t_Co=256 " Set Vim for 256 colors
 colorscheme synic
@@ -107,18 +127,42 @@ if has("autocmd")
     autocmd FileType perl set errorformat=%f:%l:%m
     autocmd FileType perl set autowrite
 
+
     " http://vim.wikia.com/wiki/Python_-_check_syntax_and_run_script
     autocmd BufRead *.py set makeprg=python\ -c\ \"import\ py_compile,sys;\ sys.stderr=sys.stdout;\ py_compile.compile(r'%')\"
     autocmd BufRead *.py set efm=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
     autocmd BufRead *.py nmap <F5> :!python %<CR>
+    autocmd BufRead,BufNewFile /etc/nginx/*,/usr/local/nginx/conf/* if &ft == '' | setfiletype nginx | endif 
     
     " Automatically source .vimrc when we save it
     autocmd BufWritePost ~/.vimrc so %
 
+    " Jedi
+    autocmd FileType python setlocal completeopt-=preview
+    " Disable Rope
+    let g:pymode_rope = 0
+
+    " Understand Markdown files
+    autocmd BufNewFile,BufRead *.md set filetype=markdown
+
+
+    au BufReadPost *.rkt,*.rktl set filetype=scheme
+    au filetype racket set lisp
+    au filetype racket set autoindent
+
+    au! FileType python setl nosmartindent
+
+    autocmd FileType *
+    \ if &omnifunc != '' |
+    \   call SuperTabChain(&omnifunc, "<c-p>") |
+    \   call SuperTabSetDefaultCompletionType("context") |
+    \ endif
+
 endif " has("autocmd")
 
 " Set the clipboard to the X windows clipboard
-set clipboard=unnamedplus
+"set clipboard=unnamedplus
+set clipboard^=unnamed,unnamedplus
 
 " Yank to clipboard
 noremap <leader>y "*y
@@ -129,36 +173,15 @@ noremap <leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
 " Some shortcuts that are nice to have.
 map <leader>v :sp ~/.vimrc<CR><C-W>_
 map <leader>T :sp ~/Dropbox/todo/todo.txt<CR><C-W>_
-map <leader>F :FriendsTwitter<CR>
-map <leader>N :Explore<CR>
-" Journal shortcut
-map <leader>J :Journal<CR>
-
-" TwitVim goodness
-let twitvim_force_ssl = 1
-let twitvim_enable_python = 1 
-let twitvim_count=100
-
-" Twitter goodness
-"nnoremap <F8> :FriendsTwitter<cr>
-nnoremap <F8> :FriendsTwitter<cr>
-nnoremap <S-F8> :UserTwitter<cr>
-nnoremap <A-F8> :RepliesTwitter<cr>
-nnoremap <C-F8> :DMTwitter<cr>
-" End TwitVim Goodness
-
-
+map <leader>N :NERDTree<CR>
+" json formatting
+map <leader>j :%!python -m json.tool<CR>
 
 " show the registers from things cut/yanked
 nmap <leader>r :registers<CR>
 
 " Turn on spell checking
 setlocal spell spelllang=en_us
-
-" Pyflakes
-" http://www.vim.org/scripts/script.php?script_id=3161
-" default config for underlines of syntax errors in gvim
-let g:pyflakes_use_quickfix = 0
 
 " Enable the :Man command for manual pages
 runtime ftplugin/man.vim
@@ -193,9 +216,7 @@ map + <C-W>+
 map <M-,> <C-W>>
 map <M-.> <C-W><
 
-" Omni completion
-set ofu=syntaxcomplete#Complete
-    " from https://github.com/spf13/spf13-vim/blob/master/.vimrc
+" from https://github.com/spf13/spf13-vim/blob/master/.vimrc
 if has('statusline')
     set laststatus=2
     " Broken down into easily includeable segments
@@ -205,14 +226,10 @@ if has('statusline')
     set statusline+=\ [%{&ff}/%Y]            " filetype
     set statusline+=\ [%{getcwd()}]          " current dir
     set statusline+=%#warningmsg#
-    set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
-    let g:syntastic_enable_signs=1
     set statusline+=%=%-14.(%l,%c%V%)\ %p%%  " Right aligned file nav info
+    set statusline+=\ %{wordCount#WordCount()}  " Word Count
 endif
-
-" Debugging Macro
-let @d='iimport ipdb;ipdb.set_trace()'
 
 " Calendar
 let g:calendar_google_calendar = 1
@@ -224,6 +241,17 @@ map <leader>gt :call TimeLapse() <cr>
 " gnupg Defaults
 let g:GPGDefaultRecipients = ['craig@decafbad.net']
 
-" SuperTab Configuration
-let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+" Fugitive
+set diffopt+=vertical
+
+" Pelican
+let g:pelican_blog_source = '~/projects/decafbad'
+let g:pelican_blog_html = '~/projects/decafbad/output'
+"let g:pelican_git_master = 'http://github.com/username/blog.git'
+"let g:pelican_publish_server = 'username@server.domain.com:~/html_directory'
+
+" Supertab
+let g:SuperTabDefaultCompletionType="context"
+
+" CtrlP
+let g:ctrlp_max_files=0
