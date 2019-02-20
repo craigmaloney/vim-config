@@ -12,6 +12,7 @@ Bundle "tomtom/tlib_vim"
 Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "honza/vim-snippets"
 Bundle "garbas/vim-snipmate"
+Plugin 'SirVer/ultisnips'
 
 Plugin 'tpope/vim-fugitive'
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -255,3 +256,14 @@ let g:SuperTabDefaultCompletionType="context"
 
 " CtrlP
 let g:ctrlp_max_files=0
+
+" UtiliSnips
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" Turn Spellcheck off
+map <F4> :setlocal spell! spelllang=en_us<CR>
+
+" Turn on line highlight
+nnoremap <Leader>c :set cursorline!<CR>
